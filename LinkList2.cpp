@@ -4,10 +4,10 @@
 typedef struct LNode
 {
     int coe, exp;
-    struct LNode * next;
-} LNode, *LinkList;
+    struct LNode* next;
+} LNode, * LinkList;
 
-bool ListInsert(LinkList &L, int i, int c, int e)
+bool ListInsert(LinkList& L, int i, int c, int e)
 {
     LinkList p = L;
     int j = 0;
@@ -18,17 +18,18 @@ bool ListInsert(LinkList &L, int i, int c, int e)
     }
     if (!p || j > i - 1)
         return false;
-    LNode *s = (LinkList)malloc(sizeof(LNode));
+    LNode* s = (LinkList)malloc(sizeof(LNode));
     s->coe = c;
     s->exp = e;
     s->next = p->next;
     p->next = s;
+    L->coe++;
     return true;
 }
 
-bool ListDelete(LinkList &L, int i, int &c, int &e)
+bool ListDelete(LinkList& L, int i, int& c, int& e)
 {
-    LNode *p = L;
+    LNode* p = L;
     int j = 0;
     while (p && j < i - 1)
     {
@@ -37,7 +38,7 @@ bool ListDelete(LinkList &L, int i, int &c, int &e)
     }
     if (!(p->next) || j > i - 1)
         return false;
-    LNode *q = p->next;
+    LNode* q = p->next;
     p->next = q->next;
     e = q->exp;
     c = q->coe;
@@ -45,68 +46,150 @@ bool ListDelete(LinkList &L, int i, int &c, int &e)
     return true;
 }
 
-void CreatList(LinkList &L, int n)
+void CreatList(LinkList& L, int n)
 {
     L = (LinkList)malloc(sizeof(LNode));
     L->next = NULL;
+    L->coe = 0;//头结点的coe用于存储链表的长度
+    LNode* p, * q;
+    q = L;
     for (int i = 0; i < n; i++)
     {
-        LNode *p = (LNode *)malloc(sizeof(LNode));
+        p = (LNode*)malloc(sizeof(LNode));
         std::cin >> (p->coe) >> (p->exp);
-        p->next = L->next;
-        L->next = p;
+        p->next = NULL;
+        q->next = p;
+        q = p;
+        L->coe++;
     }
-    return ;
+    return;
 }
 
-LinkList AddPoly(LinkList &la, LinkList &lb)
+void AddPoly(LinkList& la, LinkList& lb)
 {
-    LNode *qa = la->next;
-    LNode *qb = lb->next;
-    LinkList lc;
-    int count{0};
-
-    while (qa && qb)
+    LNode* pa = la->next;
+    LNode* pb = lb->next;
+    while (pa != NULL && pb != NULL)
     {
-        count++;
-        if (qa->exp > qb->exp)
+        LNode* temp = (LNode*)malloc(sizeof(LNode));
+        temp->next = NULL;
+        if (pa->exp > pb->exp)
         {
-            ListInsert(lc,count,qa->coe,qa->exp);
-            qa=qa->next;
+            pa = pa->next;
+            continue;
         }
-        if(qa->exp=qb->exp)
+        if (pa->exp == pb->exp)
         {
-            ListInsert(lc,count,qa->coe+qb->coe,qa->exp);
-            qa=qa->next;
-            qb=qb->next;
+            pa->coe += pb->coe;
+            pb = pb->next;
+            if (pa != NULL && pa->coe == 0)
+            {
+                temp = la;
+                while (temp->next != pa)
+                {
+                    temp = temp->next;
+                }
+                temp->next = pa->next;
+                pa = pa->next;
+                la->coe--;
+            }
+            continue;
         }
-        if (qa->exp < qb->exp)
+        if (pa->exp < pb->exp)
         {
-            ListInsert(lc,count,qb->coe,qb->exp);
-            qb=qb->next;
+            temp = la;
+            while (temp->next != pa)
+            {
+                temp = temp->next;
+            }
+            temp->next = pb;
+            pb = pb->next;
+            (temp->next)->next = pa;
+            la->coe++;
+            continue;
         }
     }
-    return lc;
+    while (pb)
+    {
+        if (pa == NULL)
+        {
+            LNode* temp = la;
+            while (temp->next != pa)
+            {
+                temp = temp->next;
+            }
+            pa = temp;
+        }
+
+        pa->next = pb;
+        pa = pb;
+        pb = pb->next;
+        la->coe++;
+    }
 }
 
-int  ListLength(LinkList L){
-    LNode *p=L->next;
-    int i=0;
-    while(p)
+void CopyList(LinkList La, LinkList& Lb)
+{
+    Lb = (LinkList)malloc(sizeof(LNode));;
+    Lb->next = NULL;
+    Lb->coe = La->coe;
+    LNode* p, * q, * r;
+    q = Lb;
+    r = La->next;
+    for (int i = 0; i < Lb->coe; i++)
     {
-        p=p->next;
-        ++i;
+        p = (LNode*)malloc(sizeof(LNode));
+        p->coe = r->coe;
+        p->exp = r->exp;
+        p->next = NULL;
+        q->next = p;
+        q = p;
+        r = r->next;
     }
-    return  i;
+    return;
 }
 
 int main()
 {
-    int num;
-    LinkList l1, l2;
+    int num, coe, exp;
+    LinkList l1 = NULL, l2 = NULL;
+
     std::cin >> num;
     CreatList(l1, num);
-    //std::cin >> num;
-    //CreatList(l2, num);
-    std::cout<<ListLength(l1);
+    std::cin >> num;
+    CreatList(l2, num);
+
+    LNode* p = l2->next;
+    LinkList l3, LFinal = (LinkList)malloc(sizeof(LNode));
+    for (int i = 0; i < l2->coe; i++)
+    {
+        CopyList(l1, l3);
+        LNode* q = l3->next;
+        for (int j = 0; j < l3->coe; j++)
+        {
+            q->exp += p->exp;
+            q->coe *= p->coe;
+            q = q->next;
+        }
+        p = p->next;
+        if (i == 0)
+            CopyList(l3, LFinal);
+        else
+            AddPoly(LFinal, l3);
+    }
+
+    std::cout << LFinal->coe << std::endl;
+
+    p = LFinal->next;
+    for (int i = 0; i < LFinal->coe; i++)
+    {
+        if (i == LFinal->coe - 1)
+        {
+            std::cout << p->coe << " " << p->exp;
+        }
+        else
+            std::cout << p->coe << " " << p->exp << std::endl;
+        p = p->next;
+    }
+    return 0;
 }

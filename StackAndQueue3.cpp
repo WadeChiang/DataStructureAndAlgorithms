@@ -70,6 +70,55 @@ struct StackChar
     }
 };
 
+int cmp(char c1, char c2)
+{
+    int a1, a2;
+
+    if ('+' == c1 || '-' == c1)
+        a1 = 3;
+    if ('*' == c1 || '/' == c1)
+        a1 = 5;
+    if ('^' == c1)
+        a1 = 7;
+    if ('s' == c1 || 'c' == c1)
+        a1 = 8;
+    if ('(' == c1)
+        a1 = 1;
+    if (')' == c1)
+        a1 = 9;
+    if ('#' == c1)
+        a1 = 0;
+
+    if ('+' == c2 || '-' == c2)
+        a2 = 2;
+    if ('*' == c2 || '/' == c2)
+        a2 = 4;
+    if ('^' == c2)
+        a2 = 6;
+    if ('s' == c2 || 'c' == c2)
+        a2 = 8;
+    if ('(' == c2)
+        a2 = 9;
+    if (')' == c2)
+        a2 = 1;
+    if ('#' == c2)
+        a2 = 0;
+
+    if (a1 > a2)
+        return 1;
+    if (a1 == a2)
+        return 0;
+    if (a1 < a2)
+        return -1;
+}
+
+double calc(double numL,char op,double numR){
+    if(op=='s')
+        return sin(numR);
+    if(op=='c')
+        return cos(numR);
+}
+
 int main()
 {
 
@@ -80,18 +129,60 @@ int main()
     StackChar OPTR{};
 
     char *op = "+-*/sc()#";
-    int a = -1;
-    while (true)
+    char c;
+    int pa = -1;
+    int pb = pa + 1;
+    double numL,numR;
+
+    while (c != '#' || OPTR.getTop() == '#')
     {
-        int b=a+1;
-        a = str.find_first_of(op,a+1);
-        if (a == string::npos)
-            break;
-        if (a != b)
+        if (str[pb] <= 57 && str[pb] >= 48)
         {
-            string num(str, b, a - b);
-            double d = atof(num.c_str());
-            OPND.push(d);
+            pa = str.find_first_of(op, pa + 1);
+            if (pa != string::npos)
+            {
+                if (pa != pb)
+                {
+                    string num(str, pb, pa - pb);
+                    double d = atof(num.c_str());
+                    OPND.push(d);
+                }
+            }
+            pb = pa + 1;
+        }
+        else
+        {
+            c=str[pb];
+            switch (cmp(OPTR.getTop(),c))
+            {
+            case -1:
+                OPTR.push(c);
+                c=str[++pb];
+                break;
+            case 0:
+                OPTR.pop();
+                if(OPTR.getTop()=='s'||OPTR.getTop()=='c')
+                {
+                    numL=0;
+                    numR=OPND.getTop();
+                    OPND.pop();
+                    OPND.push(calc(numL,OPTR.getTop(),numR));
+                    OPTR.pop();
+                }
+                break;
+            case 1:
+                
+            }
+        
+        if('s'==c||'c'==c)
+        {
+            pb+=3;
+        }
+        else
+        {
+            pb++;
+        }
+        
         }
     }
 }

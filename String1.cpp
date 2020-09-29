@@ -1,24 +1,19 @@
-#include <bits/stdc++.h>
+#include <iostream>
+#include <cstring>
 
 using namespace std;
 
 struct str {
-    char ch[1<<10+1];
-    int length=0;
+    char ch[1 << 6 + 1]{ 0 };
+    int length = 0;
     int getLength() {
         length = strlen(ch);
         return length;
     }
-    void Delete(char c) {
-        int i = 0;
-        for (; ch[i] != c; i++);
-        while (ch[i] != 0)
-        {
-            ch[i] = ch[i + 1];
-            i++;
-        }
+    int findPos(char c){
+        int i=0;
+        while(ch)
     }
-
 };
 
 str s1, s2;
@@ -26,9 +21,21 @@ str s1, s2;
 int main() {
     cin >> s1.ch;
     cin >> s2.ch;
-    for (int i = 0; i < s2.getLength(); i++)
+    bool flag;
+    for (int i = 0; i < s1.getLength(); i++)
     {
-        s1.Delete(s2.ch[i]);
+        flag = true;
+        for (int j = 0; j < s2.getLength(); j++)
+        {
+            if (s1.ch[i] == s2.ch[j])
+            {
+                flag = false;
+                break;
+            }
+        }
+        if (flag == true)
+        {
+            cout << s1.ch[i];
+        }
     }
-    cout << s1.ch;
 }

@@ -1,8 +1,5 @@
 #include <iostream>
 
 int main(){
-    int i=0;
-    std::cout<<i++<<std::endl;
-    std::cout<<++i;
-    return 0;
+    std::cout<<atof("27.55^3+1/3");
 }

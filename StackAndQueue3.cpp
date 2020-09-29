@@ -1,11 +1,13 @@
-#include <bits/stdc++.h>
+#include <iostream>
+#include <math.h>
+#include <iomanip>
 
 using namespace std;
 
 struct StackDouble
 {
-    double *base;
-    double *top;
+    double* base;
+    double* top;
     int StackSize = 0;
     StackDouble()
     {
@@ -38,8 +40,8 @@ struct StackDouble
 
 struct StackChar
 {
-    char *base;
-    char *top;
+    char* base;
+    char* top;
     int StackSize = 0;
     StackChar()
     {
@@ -107,16 +109,43 @@ int cmp(char c1, char c2)
     if (a1 > a2)
         return 1;
     if (a1 == a2)
+    {
         return 0;
+    }
     if (a1 < a2)
         return -1;
 }
 
-double calc(double numL,char op,double numR){
-    if(op=='s')
+double calc(double numL, char op, double numR)
+{
+    if (op == 's')
+    {
         return sin(numR);
-    if(op=='c')
+    }
+    if (op == 'c')
+    {
         return cos(numR);
+    }
+    if (op == '+')
+    {
+        return (numL + numR);
+    }
+    if (op == '-')
+    {
+        return (numL - numR);
+    }
+    if (op == '*')
+    {
+        return (numL * numR);
+    }
+    if (op == '/')
+    {
+        return (numL / numR);
+    }
+    if (op == '^')
+    {
+        return pow(numL, numR);
+    }
 }
 
 int main()
@@ -128,17 +157,19 @@ int main()
     StackDouble OPND{};
     StackChar OPTR{};
 
-    char *op = "+-*/sc()#";
-    char c;
+    OPTR.push('#');
+
+    char  op[11] = "+-*/^sc()#";
+    char c = 0;
     int pa = -1;
     int pb = pa + 1;
-    double numL,numR;
+    double numL, numR;
 
-    while (c != '#' || OPTR.getTop() == '#')
+    while (true)
     {
         if (str[pb] <= 57 && str[pb] >= 48)
         {
-            pa = str.find_first_of(op, pa + 1);
+            pa = str.find_first_of(op, pb);
             if (pa != string::npos)
             {
                 if (pa != pb)
@@ -148,41 +179,65 @@ int main()
                     OPND.push(d);
                 }
             }
-            pb = pa + 1;
+            pb = pa;
         }
         else
         {
-            c=str[pb];
-            switch (cmp(OPTR.getTop(),c))
+            c = str[pb];
+            switch (cmp(OPTR.getTop(), c))
             {
             case -1:
                 OPTR.push(c);
-                c=str[++pb];
                 break;
             case 0:
                 OPTR.pop();
-                if(OPTR.getTop()=='s'||OPTR.getTop()=='c')
+                if (OPTR.getTop() == 's' || OPTR.getTop() == 'c')
                 {
-                    numL=0;
-                    numR=OPND.getTop();
+                    numR = OPND.getTop();
                     OPND.pop();
-                    OPND.push(calc(numL,OPTR.getTop(),numR));
+                    OPND.push(calc(0, OPTR.getTop(), numR));
                     OPTR.pop();
                 }
                 break;
             case 1:
-                
+                numR = OPND.getTop();
+                OPND.pop();
+                numL = OPND.getTop();
+                OPND.pop();
+                OPND.push(calc(numL, OPTR.getTop(), numR));
+                OPTR.pop();
+                pb--;
             }
-        
-        if('s'==c||'c'==c)
+
+            if ('s' == c || 'c' == c)
+            {
+                pb += 3;
+            }
+            else
+            {
+                pb++;
+            }
+            pa = pb;
+            c = str[pb];
+        }
+
+        /*char* pp = OPTR.base;
+        double* ppp = OPND.base;
+        while (pp != OPTR.top)
         {
-            pb+=3;
+            std::cout << *pp << " ";
+            pp++;              
         }
-        else
+        std::cout << endl;
+        while (ppp != OPND.top)
         {
-            pb++;
+            std::cout << *ppp << " ";
+            ppp++;
         }
-        
-        }
+        std::cout << endl;*/
+        if (OPTR.StackSize == 0)
+            break;
     }
+    cout.precision(3);
+    cout << setiosflags(ios::fixed)<< OPND.getTop();
 }

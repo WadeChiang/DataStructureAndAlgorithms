@@ -2,5 +2,17 @@
     "editor.fontFamily": "等距更纱黑体 SC，等距更纱黑体 SC，等距更纱黑体 SC",
     "terminal.integrated.cursorStyle": "line",
     "terminal.integrated.fontSize": 16,
-    "terminal.integrated.fontFamily": "等距更纱黑体 SC"
+    "terminal.integrated.fontFamily": "等距更纱黑体 SC",
+    "files.associations": {
+        "*.c": "c",
+        "*.html": "html",
+        "*.tcc": "cpp",
+        "bitset": "cpp",
+        "forward_list": "cpp",
+        "functional": "cpp",
+        "fstream": "cpp",
+        "istream": "cpp",
+        "streambuf": "cpp",
+        "variant": "cpp"
+    }
 }
